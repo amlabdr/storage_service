@@ -1,0 +1,5 @@
+{
+    "AMQP_STORAGE_EVENTS_TOPIC":"topic://storage.event",
+    "CAPABILITY_PERIOD":5
+  }
+  

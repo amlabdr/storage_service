@@ -1,0 +1,7 @@
+elasticsearch:
+  host: localhost
+  port: 9200
+  scheme: https
+  username: elastic
+  password: oRDd*wYGG+28Zvd1bAW0
+  certificate_path: ./certificates
