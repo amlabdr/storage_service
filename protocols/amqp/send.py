@@ -23,11 +23,11 @@ class SendHandler(MessagingHandler):
 
     def on_connection_error(self, event):
         logging.error(f"Connection error while sending messages to server: {self.server} for topic: {self.topic}")
-        return super().on_connection_error(event)
+        event.connection.close()
 
     def on_transport_error(self, event):
         logging.error(f"Transport error while sending messages to server: {self.server} for topic: {self.topic}")
-        return super().on_transport_error(event)
+        event.connection.close()
 
     def on_start(self, event):
         conn = event.container.connect(self.server)
@@ -35,14 +35,18 @@ class SendHandler(MessagingHandler):
 
     def on_sendable(self, event):
         logging.info(f"Agent sending messages to topic {self.topic}")
-        for message_data in self.messages:
-            msg = Message(body=json.dumps(message_data))
-            event.sender.send(msg)
-        event.sender.close()
+        try:
+            for message_data in self.messages:
+                msg = Message(body=json.dumps(message_data))
+                event.sender.send(msg)
+        except Exception as e:
+            logging.error(f"Error sending messages: {e}")
+        finally:
+            event.sender.close()
 
     def on_rejected(self, event):
         logging.error(f"Message rejected while sending messages to server: {self.server} for topic: {self.topic}")
-        return super().on_rejected(event)
+        event.connection.close()
 
     def on_accepted(self, event):
         logging.info(f"Message accepted in topic {self.topic}")

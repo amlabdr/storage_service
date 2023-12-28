@@ -2,9 +2,8 @@
     "label": "Storage",
     "endpoint": "/multiverse/storage",
     "when": "now",
-    "parameters": {"index_name":"data_index","data":{"field1":"value1"}},
-    "results": [
-    ],
+    "parameters": ["topic_to_subscribe"],
+    "results": [],
     "schema": "44b3c67ebad2debfb38e90d8afd66c3l",
     "timestamp": "2022-04-21 13:54:10.91",
     "role": "admin",

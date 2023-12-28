@@ -2,7 +2,7 @@ import pika
 from elasticsearch import Elasticsearch
 import json, yaml
 from config.config import Config
-from controller.controller_service import Controller_service
+from protocols.controller_service import Controller_service
 
 INDEX_NAME = "data_index"
 
