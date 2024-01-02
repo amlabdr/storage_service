@@ -1,0 +1,12 @@
+{
+    "label": "Storage",
+    "endpoint": "/multiverse/storage",
+    "when": "now ... 1774143996 / 5000",
+    "parameters": {"topic_to_subscribe":"topic:///multiverse/qnet/tt/Alice/results"},
+    "results": [],
+    "schema": "44b3c67ebad2debfb38e90d8afd66c3l",
+    "timestamp": "2022-04-21 13:54:10.91",
+    "role": "admin",
+    "specification": "store"
+}
+

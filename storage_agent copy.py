@@ -41,14 +41,20 @@ class StorageAgent:
         return es
 
     def process_specification(self, specification_msg, interrupt_event):
+        if interrupt_event.is_set():
+            logging.info(f"Specification {specification_msg['specification']} interrupted.")
+            spec_name = specification_msg['specification']
+            unique_id = specification_msg['schema'] 
+            key_to_delete = (spec_name, unique_id)
+            if key_to_delete in self.running_specs:
+                del self.running_specs[key_to_delete]
+            return
         topic_to_subscribe = specification_msg["parameters"]["topic_to_subscribe"]
         logging.info("msg received {}".format(specification_msg))
-        callback_with_interruption = lambda event: self.store_data_in_elasticsearch(specification_msg, interrupt_event, event)
-        receiver = Receiver(on_message_callback=callback_with_interruption)
+        receiver = Receiver(on_message_callback=self.store_data_in_elasticsearch)
         url = self.cfg.amqp_broker
         topic_to_subscribe = 'topic://'+topic_to_subscribe
         receiver.receive_event(url,topic_to_subscribe)
-        return
 
     def telemetry_service_on_message_callback(self, event):
         specification_msg = json.loads(event.message.body)
@@ -73,16 +79,7 @@ class StorageAgent:
         else:
             logging.warning("Unknown message type.")
 
-    def store_data_in_elasticsearch(self, specification_msg, interrupt_event, event):
-        if interrupt_event.is_set():
-            event.container.stop()
-            logging.info(f"Specification {specification_msg['specification']} interrupted.")
-            spec_name = specification_msg['specification']
-            unique_id = specification_msg['schema'] 
-            key_to_delete = (spec_name, unique_id)
-            if key_to_delete in self.running_specs:
-                del self.running_specs[key_to_delete]
-            return
+    def store_data_in_elasticsearch(self, event):
         # Attempt to load event.message.body as JSON
         data_msg = json.loads(event.message.body)
         ##########

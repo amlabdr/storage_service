@@ -22,7 +22,7 @@ def start_storage_agent():
 
     capability_data["timestamp"] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-4]
     topic = 'topic://'+'/capabilities'
-    thread_send_capability = Thread(target=send_capability, args=(cfg.amqp_broker, topic, cfg.capability_period, capability_data), daemon=True)
+    thread_send_capability = Thread(target=send_capability, args=(cfg.amqp_broker, topic, cfg.capability_period, capability_data))
     #thread_send_capability.start()
     endpoint = capability_data['endpoint']
     # Subscribe the ControllerService to events and pass the StorageAgent

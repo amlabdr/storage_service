@@ -19,7 +19,7 @@ class SendHandler(MessagingHandler):
         self.topic = topic
         self.messages = messages
         self.confirmed = 0
-        self.total = len(messages)
+        self.total = 1
 
     def on_connection_error(self, event):
         logging.error(f"Connection error while sending messages to server: {self.server} for topic: {self.topic}")
@@ -36,24 +36,23 @@ class SendHandler(MessagingHandler):
     def on_sendable(self, event):
         logging.info(f"Agent sending messages to topic {self.topic}")
         try:
-            for message_data in self.messages:
-                msg = Message(body=json.dumps(message_data))
-                event.sender.send(msg)
+            msg = Message(body=json.dumps(self.messages))
+            event.sender.send(msg)
+            logging.info("Agent sending msg to topic{}".format(self.topic))
+            event.sender.close()
         except Exception as e:
             logging.error(f"Error sending messages: {e}")
-        finally:
-            event.sender.close()
 
     def on_rejected(self, event):
-        logging.error(f"Message rejected while sending messages to server: {self.server} for topic: {self.topic}")
-        event.connection.close()
-
+        logging.error("msg regected while sending msg to server: {} for topic: {}".format(self.server, self.topic))
+        return super().on_rejected(event)
+        
     def on_accepted(self, event):
-        logging.info(f"Message accepted in topic {self.topic}")
+        logging.info("msg accepted in topic {}".format(self.topic))
         self.confirmed += 1
         if self.confirmed == self.total:
             event.connection.close()
 
     def on_disconnected(self, event):
-        logging.error(f"Disconnected error while sending messages to server: {self.server} for topic: {self.topic}")
+        logging.error("disconnected error while sending msg to server: {} for topic: {}".format(self.server, self.topic))
         self.sent = self.confirmed
